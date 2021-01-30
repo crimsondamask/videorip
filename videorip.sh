@@ -4,13 +4,12 @@
 
 #Parsing arguments and cleaning the filename
 
-file="$1"
 timestamps="$2"
-filename=$(basename -- "$file")
+filename=$(basename -- "$1")
 #ext="${filename##*.}"
 ext="m4a"
 filename=${filename%.*}
-safename="$(echo $filename | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s/-\+/-/g;s/\(^-\|-\$\)//g")"
+safename="$(echo $filename | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s|\+|-|g;s|\|||g;s|\$||g;s|&||g")"
 
 #creating a directory for output files
 directory="$safename"
@@ -33,7 +32,6 @@ do
     TIME=$(echo $line | tr -s ' ' | cut -d ' ' -f 1)
     TIMESAFE=$(date -d "$TIME" +"%T")
     word="$(echo $line | tr -s ' ' | cut -d ' ' -f 2- | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
-    echo "$word"
     sections+=("${word}")
     stamps+=("${TIMESAFE}")
 
