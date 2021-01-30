@@ -32,7 +32,8 @@ while read -r line;
 do
     TIME=$(echo $line | tr -s ' ' | cut -d ' ' -f 1)
     TIMESAFE=$(date -d "$TIME" +"%T")
-    word=$(echo $line | tr -s ' ' | cut -d ' ' -f 2)
+    word="$(echo $line | tr -s ' ' | cut -d ' ' -f 2- | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
+    echo "$word"
     sections+=("${word}")
     stamps+=("${TIMESAFE}")
 
