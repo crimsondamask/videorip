@@ -7,7 +7,8 @@
 file="$1"
 timestamps="$2"
 filename=$(basename -- "$file")
-ext="${filename##*.}"
+#ext="${filename##*.}"
+ext="m4a"
 filename=${filename%.*}
 safename="$(echo $filename | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s/-\+/-/g;s/\(^-\|-\$\)//g")"
 
@@ -30,9 +31,11 @@ sections=();
 while read -r line;
 do
     TIME=$(echo $line | tr -s ' ' | cut -d ' ' -f 1)
+    TIMESAFE=$(date -d "$TIME" +"%T")
     word=$(echo $line | tr -s ' ' | cut -d ' ' -f 2)
     sections+=("${word}")
-    stamps+=("${TIME}")
+    stamps+=("${TIMESAFE}")
+
 done < "$2"
 echo "${stamps[@]}"
 echo "${sections[@]}"
