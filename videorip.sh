@@ -6,8 +6,8 @@
 
 timestamps="$2"
 filename=$(basename -- "$1")
-#ext="${filename##*.}"
-ext="m4a"
+ext="${filename##*.}"
+#ext="m4a"
 filename=${filename%.*}
 safename="$(echo $filename | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s|\+|-|g;s|\|||g;s|\$||g;s|&||g")"
 
@@ -30,7 +30,14 @@ sections=();
 while read -r line;
 do
     TIME=$(echo $line | tr -s ' ' | cut -d ' ' -f 1)
-    TIMESAFE=$(date -d "$TIME" +"%T")
+
+    #Check if the timing is in a H:M:S format
+    if [ "$( echo '$TIME' | grep -o ':' | wc -l )" -eq 1 ]
+    then
+        TIMESAFE=$( date -d "00:$TIME" +"%T" )
+    else
+        TIMESAFE=$(date -d "$TIME" +"%T")
+    fi
     word="$(echo $line | tr -s ' ' | cut -d ' ' -f 2- | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
     sections+=("${word}")
     stamps+=("${TIMESAFE}")
@@ -43,15 +50,17 @@ echo "${sections[@]}"
 
 for ((i = 1 ; i < $linecount; i++))
 do
-    title="${safename}${COUNT}-${sections[$COUNT]}"
+    title="0${COUNT}-${sections[$COUNT]}"
     echo "Slicing from ${stamps[${COUNT}]} to ${stamps[$(( COUNT + 1 ))]} ====> $title"
+
+    #For audio output add the -vn option 
     ffmpeg -nostdin -y -loglevel -8 -i $1 -ss "${stamps[$COUNT]}" -c copy -to "${stamps[$(( COUNT +1 ))]}" -vn "$directory/$title.$ext" &&
     COUNT=$((COUNT+1))
 done
 
 #The last slice is done outside the loop
 
-title="${safename}${COUNT}-${sections[$COUNT]}"
+title="0${COUNT}-${sections[$COUNT]}"
 
 echo "Slicing from ${stamps[${COUNT}]} to the end of the file ====> $title"
 
