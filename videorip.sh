@@ -38,7 +38,7 @@ do
     else
         TIMESAFE=$(date -d "$TIME" +"%T")
     fi
-    word="$(echo $line | tr -s ' ' | cut -d ' ' -f 2- | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
+    word="$(echo $line | sed 's|-|\ |g' | tr -s ' ' | cut -d ' ' -f 2- | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
     sections+=("${word}")
     stamps+=("${TIMESAFE}")
 
