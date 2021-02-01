@@ -18,3 +18,4 @@ And can handle irrigular delimiters, for example:
 00:00  -  Introduction
 05:20 -First chapter
 ```
+The script can handle the spaces leading and trailing the "-" which is the delimiter. 
