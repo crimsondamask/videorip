@@ -34,20 +34,18 @@ do
     TIME=$(echo $line | tr -s ' ' | cut -d ' ' -f 1)
 
     #Check if the timing is in a H:M:S format
-    if [ "$( echo '$TIME' | grep -o ':' | wc -l )" -eq 1 ]
+    if [ "$( echo "$TIME" | grep -o ':' | wc -l )" -eq 1 ]
     then
         TIMESAFE=$( date -d "00:$TIME" +"%T" )
     else
         TIMESAFE=$(date -d "$TIME" +"%T")
     fi
-    word="$(echo $line | tr -s ' ' | awk -F "$delimiter" '{print $2, $3, $4, $5}' | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
+    word="$(echo $line | tr -s ' ' | awk -F "$delimiter" '{print $2, $3, $4, $5, $6}' | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
     echo $word
     sections+=("${word}")
     stamps+=("${TIMESAFE}")
 
 done < "$2"
-echo "${stamps[@]}"
-echo "${sections[@]}"
 
 #Kicking the tires with the main loop
 
@@ -57,7 +55,7 @@ do
     echo "Slicing from ${stamps[${COUNT}]} to ${stamps[$(( COUNT + 1 ))]} ====> $title"
 
     #For audio output add the -vn option 
-    ffmpeg -nostdin -y -loglevel -8 -i $1 -ss "${stamps[$COUNT]}" -c copy -to "${stamps[$(( COUNT +1 ))]}" -vn "$directory/$title.$ext" &&
+    ffmpeg -nostdin -y -loglevel -8 -i $1 -ss "${stamps[$COUNT]}" -c copy -to "${stamps[$(( COUNT +1 ))]}" "$directory/$title.$ext" &&
     COUNT=$((COUNT+1))
 done
 
@@ -67,5 +65,5 @@ title="0${COUNT}-${sections[$COUNT]}"
 
 echo "Slicing from ${stamps[${COUNT}]} to the end of the file ====> $title"
 
-ffmpeg -nostdin -y -loglevel -8 -i $1 -ss "${stamps[$COUNT]}" -c copy -vn "output/$title.$ext" &&
+ffmpeg -nostdin -y -loglevel -8 -i $1 -ss "${stamps[$COUNT]}" -c copy "output/$title.$ext" &&
 echo "Done! $(( COUNT + 1 )) files created"
