@@ -19,7 +19,7 @@ mkdir -p $directory
 
 #Getting the total number of lines to control the loop
 
-linecount="$(wc -l $2 | tr -s ' ' | cut -d ' ' -f 1)"
+linecount="$( cat $2 | wc -l )"
 echo "$linecount sections found."
 
 COUNT=0
