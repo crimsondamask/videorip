@@ -1,10 +1,12 @@
 #!/bin/bash
 
-[ ! -f "$2" ] && printf "USAGE:\n./videorip VIDEO TIMESTAMPS" && exit 
+[ ! -f "$2" ] && printf "USAGE:\n./videorip VIDEO TIMESTAMPS DELIMITER" && exit 1 
+[ ! -f "$1" ] && printf "USAGE:\n./videorip VIDEO TIMESTAMPS DELIMITER" && exit 1 
 
 #Parsing arguments and cleaning the filename
 
 timestamps="$2"
+delimiter="$3"
 filename=$(basename -- "$1")
 ext="${filename##*.}"
 #ext="m4a"
@@ -38,7 +40,8 @@ do
     else
         TIMESAFE=$(date -d "$TIME" +"%T")
     fi
-    word="$(echo $line | sed 's|-|\ |g' | tr -s ' ' | cut -d ' ' -f 2- | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
+    word="$(echo $line | tr -s ' ' | awk -F "$delimiter" '{print $2, $3, $4, $5}' | sed "s|\ ||g;s|\&||g;s|\$||g;s|\#||g;s|\?||g;s|\/||g;s|\|||g")"
+    echo $word
     sections+=("${word}")
     stamps+=("${TIMESAFE}")
 
