@@ -31,9 +31,7 @@ do
 
     #Check if the timing is in a H:M:S format
 
-    [ "$( echo "$TIME" | grep -o ':' | wc -l )" -eq 1 ] && 
-        TIMESAFE=$( date -d "00:$TIME" +"%T" ) || 
-        TIMESAFE=$(date -d "$TIME" +"%T") || exit 1 
+    [ "$( echo "$TIME" | grep -o ':' | wc -l )" -eq 1 ] && TIMESAFE=$( date -d "00:$TIME" +"%T" ) || TIMESAFE=$(date -d "$TIME" +"%T") || exit 1 
 
     #Getting chapter titles.
 
